@@ -57,7 +57,7 @@ function DataTable() {
     
     try {
       if(update && id!=''){
-        const response = await axios.put(`http://localhost:3000/api/event/${id}`, data, {
+        const response = await axios.put(`${import.meta.env.VITE_BASE_URL}/api/event/${id}`, data, {
           headers: {
             'Content-Type': 'application/json'
           }
@@ -66,7 +66,7 @@ function DataTable() {
         setId('');
       }
       else{
-        const response = await axios.post('http://localhost:3000/api/event', data, {
+        const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/event`, data, {
           headers: {
             'Content-Type': 'application/json'
           }
@@ -82,7 +82,7 @@ function DataTable() {
   };
   const fetchEvents = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/event');
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/event`);
       if (response.data.success) {
         setEvents(response.data.data);
         setLoading(false);

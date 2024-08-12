@@ -23,7 +23,7 @@ const Banner = () => {
     const fetchEvent = async () => {
       try {
         const response = await axios.post(
-          "http://localhost:3000/api/current-event",
+          `${import.meta.env.VITE_BASE_URL}/api/current-event`,
           { now },
           {
             headers: {
