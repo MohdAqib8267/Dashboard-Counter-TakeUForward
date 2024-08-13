@@ -105,4 +105,16 @@ export const currentEvent = async (req, res) => {
   }
 };
 
-
+export const deleteEvent=async(req,res)=>{
+    const {id} = req.params;
+    try {
+        const response = await db.event.delete({
+            where:{
+                id:id
+            }
+        })
+        return res.json({success:true});
+    } catch (error) {
+        console.log(error);
+    }
+}
