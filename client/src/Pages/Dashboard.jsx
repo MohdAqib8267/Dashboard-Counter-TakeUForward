@@ -8,8 +8,8 @@ const Dashboard = () => {
 
 
   return (
-    <div className='bg-slate-50'>
-      
+    <div className='bg-slate-50 min-h-screen'>
+       
           <section>
             <div className='h-full mx-auto max-w-screen-xl px-2.5 md:px-20 flex flex-col justify-center items-center gap-16 pb-10'>
               <div className='flex flex-col lg:flex-col items-center py-20 gap-4'>

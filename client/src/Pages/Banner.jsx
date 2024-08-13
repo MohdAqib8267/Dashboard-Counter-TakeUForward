@@ -74,10 +74,10 @@ const Banner = () => {
     );
   }
   return (
-    <div className="bg-slate-50 ">
-      <section>
+    <div className="bg-slate-50 min-h-screen">
+      <section className="bg-slate-200 ">
         {/* container */}
-        <div className="h-full pl-5  bg-slate-200 rounded-b-3xl space-y-5  mx-auto max-w-screen-xl px-2.5 md:px-20 pb-24 pt-10 lg:grid lg:grid-cols-5 sm:pb-32 lg:gap-x-0 xl:gap-x-8 lg:pt-24 xl:pt-32 lg:pb-52">
+        <div className="h-full pl-5  rounded-b-3xl space-y-5  mx-auto max-w-screen-xl px-2.5 md:px-20 pb-24 pt-10 lg:grid lg:grid-cols-5 sm:pb-32 lg:gap-x-0 xl:gap-x-8 lg:pt-24 xl:pt-32 lg:pb-52">
           {remainingTime !== "Event has ended" ? (
             <>
               <div className="  h-full flex flex-col col-span-3 justify-center  space-y-5  ">
