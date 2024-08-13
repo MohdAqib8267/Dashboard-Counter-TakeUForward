@@ -16,8 +16,10 @@ import { MobileDateTimePicker } from "@mui/x-date-pickers/MobileDateTimePicker";
 import { DesktopDateTimePicker } from "@mui/x-date-pickers/DesktopDateTimePicker";
 import { StaticDateTimePicker } from "@mui/x-date-pickers/StaticDateTimePicker";
 import { useEffect, useState } from "react";
+import { HiInformationCircle } from "react-icons/hi";
+import { Alert } from "flowbite-react";
 import axios from "axios";
-import { Circles } from 'react-loader-spinner';
+import { Circles } from "react-loader-spinner";
 
 function DataTable() {
   const [loading, setLoading] = useState(true);
@@ -29,9 +31,14 @@ function DataTable() {
     endTimer: dayjs(),
     status: false,
   });
-  const [update,setUpdate]=useState(false);
-  const [id,setId]=useState('');
-  const [events,setEvents]=useState([]);
+  const [update, setUpdate] = useState(false);
+  const [id, setId] = useState("");
+  const [events, setEvents] = useState([]);
+  const URL =
+    import.meta.env.MODE == "development"
+      ? import.meta.env.VITE_LOCAL_URL
+      : import.meta.env.VITE_BASE_URL;
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setData({
@@ -54,39 +61,43 @@ function DataTable() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       setLoading(true);
-      if(update && id!=''){
-        const response = await axios.put(`${import.meta.env.VITE_BASE_URL}/api/event/${id}`, data, {
+      if (update && id != "") {
+        const response = await axios.put(`${URL}/api/event/${id}`, data, {
           headers: {
-            'Content-Type': 'application/json'
-          }
+            "Content-Type": "application/json",
+          },
         });
+        // console.log(response);
         setUpdate(false);
-        setId('');
-      }
-      else{
-        const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/event`, data, {
+        setId("");
+      } else {
+        const response = await axios.post(`${URL}/api/event`, data, {
           headers: {
-            'Content-Type': 'application/json'
-          }
+            "Content-Type": "application/json",
+          },
         });
       }
-      
+
       setOpenModal(false);
       setData({});
       await fetchEvents();
     } catch (error) {
+      if (error.response?.status == 409) {
+        setLoading(true);
+        alert(`Event is already exist in this frame. please select Event except ${error.response.data.overlappingEvent.startTimer} to ${error.response.data.overlappingEvent.startTimer}`);
+      }
       console.log(error);
-    }
-    finally{
+    } finally {
       setLoading(false);
     }
   };
+
   const fetchEvents = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/event`);
+      const response = await axios.get(`${URL}/api/event`);
       if (response.data.success) {
         setEvents(response.data.data);
         setLoading(false);
@@ -98,43 +109,47 @@ function DataTable() {
     }
   };
   useEffect(() => {
-   
-
     setOpenModal(false);
     fetchEvents();
-  }, [events.length,setLoading]);
+  }, [events.length, setLoading]);
 
   function onCloseModal() {
     setOpenModal(false);
     setData({
       link: "",
-    description: "",
-    startTimer: dayjs(),
-    endTimer: dayjs(),
-    status: false,
+      description: "",
+      startTimer: dayjs(),
+      endTimer: dayjs(),
+      status: false,
     });
-    setId('');
-    setUpdate('');
+    setId("");
+    setUpdate("");
   }
-  const handleEdit =async(id,description,startTimer,endTimer,link,status)=>{
+  const handleEdit = async (
+    id,
+    description,
+    startTimer,
+    endTimer,
+    link,
+    status
+  ) => {
     try {
       setOpenModal(true);
       setUpdate(true);
       setId(id);
       setData({
-        description:description,
-        startTimer:dayjs(startTimer),
-        endTimer:dayjs(endTimer),
-        link:link,
-        status:status,
-      })
-
+        description: description,
+        startTimer: dayjs(startTimer),
+        endTimer: dayjs(endTimer),
+        link: link,
+        status: status,
+      });
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
-  if(loading){
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <Circles color="#4fa94d" height={80} width={80} />
@@ -245,7 +260,7 @@ function DataTable() {
                   onClick={handleSubmit}
                   className="w-full flex justify-center align-center"
                 >
-                  {update?"Update":"Submit"}
+                  {update ? "Update" : "Submit"}
                 </Button>
               </div>
             </div>
@@ -266,32 +281,45 @@ function DataTable() {
           </Table.HeadCell>
         </Table.Head>
         <Table.Body className="divide-y">
-          {
-            events.length>0 && events.map((e)=>
-            (
+          {events.length > 0 &&
+            events.map((e) => (
               <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-            <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-              {e.description}
-            </Table.Cell>
-            <Table.Cell >
-              <ToggleSwitch className="focus:outline-none border-none bg-transparent -mx-3" checked={e.status} />
-            </Table.Cell>
-            <Table.Cell>{dayjs(e.startTimer).format('YYYY-MM-DD HH:mm:ss')}</Table.Cell>
-            <Table.Cell>{dayjs(e.endTimer).format('YYYY-MM-DD HH:mm:ss')}</Table.Cell>
-            <Table.Cell>{e.link}</Table.Cell>
-            <Table.Cell>
-              <a
-                href="#" onClick={()=>handleEdit(e.id,e.description,e.startTimer,e.endTimer,e.link,e.status)}
-                className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
-              >
-                Edit
-              </a>
-            </Table.Cell>
-          </Table.Row>
-            )
-            )
-          }
-          
+                <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                  {e.description}
+                </Table.Cell>
+                <Table.Cell>
+                  <ToggleSwitch
+                    className="focus:outline-none border-none bg-transparent -mx-3"
+                    checked={e.status}
+                  />
+                </Table.Cell>
+                <Table.Cell>
+                  {dayjs(e.startTimer).format("YYYY-MM-DD HH:mm:ss")}
+                </Table.Cell>
+                <Table.Cell>
+                  {dayjs(e.endTimer).format("YYYY-MM-DD HH:mm:ss")}
+                </Table.Cell>
+                <Table.Cell>{e.link}</Table.Cell>
+                <Table.Cell>
+                  <a
+                    href="#"
+                    onClick={() =>
+                      handleEdit(
+                        e.id,
+                        e.description,
+                        e.startTimer,
+                        e.endTimer,
+                        e.link,
+                        e.status
+                      )
+                    }
+                    className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
+                  >
+                    Edit
+                  </a>
+                </Table.Cell>
+              </Table.Row>
+            ))}
         </Table.Body>
       </Table>
     </div>

@@ -10,6 +10,7 @@ import {Circles } from 'react-loader-spinner'
 dayjs.extend(duration);
 
 const Banner = () => {
+  const URL = import.meta.env.MODE=="development"?import.meta.env.VITE_LOCAL_URL:import.meta.env.VITE_BASE_URL
   const [bannerData, setBannerData] = useState({});
   const [remainingTime, setRemainingTime] = useState({
     days: 0,
@@ -23,7 +24,7 @@ const Banner = () => {
     const fetchEvent = async () => {
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_BASE_URL}/api/current-event`,
+          `${URL}/api/current-event`,
           { now },
           {
             headers: {
@@ -76,7 +77,7 @@ const Banner = () => {
     <div className="bg-slate-50 ">
       <section>
         {/* container */}
-        <div className="h-full bg-slate-200 rounded-b-3xl space-y-5  mx-auto max-w-screen-xl px-2.5 md:px-20 pb-24 pt-10 lg:grid lg:grid-cols-5 sm:pb-32 lg:gap-x-0 xl:gap-x-8 lg:pt-24 xl:pt-32 lg:pb-52">
+        <div className="h-full pl-5  bg-slate-200 rounded-b-3xl space-y-5  mx-auto max-w-screen-xl px-2.5 md:px-20 pb-24 pt-10 lg:grid lg:grid-cols-5 sm:pb-32 lg:gap-x-0 xl:gap-x-8 lg:pt-24 xl:pt-32 lg:pb-52">
           {remainingTime !== "Event has ended" ? (
             <>
               <div className="  h-full flex flex-col col-span-3 justify-center  space-y-5  ">
