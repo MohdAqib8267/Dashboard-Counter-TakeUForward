@@ -56,6 +56,7 @@ function DataTable() {
     e.preventDefault();
     
     try {
+      setLoading(true);
       if(update && id!=''){
         const response = await axios.put(`${import.meta.env.VITE_BASE_URL}/api/event/${id}`, data, {
           headers: {
@@ -78,6 +79,9 @@ function DataTable() {
       await fetchEvents();
     } catch (error) {
       console.log(error);
+    }
+    finally{
+      setLoading(false);
     }
   };
   const fetchEvents = async () => {
@@ -140,7 +144,7 @@ function DataTable() {
   return (
     <div className="overflow-x-auto">
       <div className="flex flex-col md:flex-row mx-2 justify-between items-center">
-        <p className="my-2">Most Recent Records-(Up to 10)</p>
+        <p className="my-2">Most Recent Records</p>
         <button
           onClick={() => setOpenModal(true)}
           className="my-2 bg-green-500 text-white focus:outline-none"

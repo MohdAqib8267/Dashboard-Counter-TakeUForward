@@ -79,8 +79,8 @@ const Banner = () => {
         <div className="h-full bg-slate-200 rounded-b-3xl space-y-5  mx-auto max-w-screen-xl px-2.5 md:px-20 pb-24 pt-10 lg:grid lg:grid-cols-5 sm:pb-32 lg:gap-x-0 xl:gap-x-8 lg:pt-24 xl:pt-32 lg:pb-52">
           {remainingTime !== "Event has ended" ? (
             <>
-              <div className="  h-full flex flex-col col-span-3 justify-center  space-y-5 lg:justify-start ">
-                <h2 className="text-5xl md:text-6xl text-green-600 font-semibold">
+              <div className="  h-full flex flex-col col-span-3 justify-center  space-y-5  ">
+                <h2 className="text-3xl md:text-4xl text-green-600 font-semibold">
                   {bannerData?.description}
                 </h2>
                 <h3
@@ -96,10 +96,10 @@ const Banner = () => {
                 </h3>
               </div>
               <div className=" flex flex-col  col-span-2 gap-5 justify-center w-full h-full">
-                <h1 className="text-4xl text-green-600 font-semibold">
-                  Count Down is begin..
+                <h1 className="text-3xl md:text-4xl w-fit text-center tracking-tight text-green-600 font-semibold">
+                  Count <span className="text-zinc-800">Down</span> is begin..
                 </h1>
-                <div className="text-6xl flex justify-start   items-start">
+                <div className="text-6xl flex justify-start font-semibold   items-start">
                   <span className="flex justify-center  items-center flex-col">
                     <p>{remainingTime && remainingTime?.days}</p>
                     <p className="text-sm">Days</p>
