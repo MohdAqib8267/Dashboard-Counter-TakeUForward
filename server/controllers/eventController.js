@@ -1,47 +1,68 @@
 import { db } from "../config/prismaConfig.js";
 
 export const createEvent = async (req, res) => {
-  const { link, description, startTimer, endTimer, status } = req.body;
-  console.log(req.body)
-  try {
-    if (!link || !description || !startTimer || !endTimer) {
-      return res.status(400).json({ error: "something is missing..." });
-    }
-    //check event overlapping
-    const checkOverLapping = await db.event.findFirst({
-      where: {
-        OR: [
-          {
-            startTimer: {
-              lte : endTimer
+    const { link, description, startTimer, endTimer, status } = req.body;
+    const { id } = req.params;
+  
+    try {
+      if (!link || !description || !startTimer || !endTimer) {
+        return res.status(400).json({ error: "Something is missing..." });
+      }
+  
+      
+      const startTime = new Date(startTimer);
+      const endTime = new Date(endTimer);
+  
+      // Check for overlapping events
+      const checkOverLapping = await db.event.findFirst({
+        where: {
+          OR: [
+            {
+              startTimer: {
+                lte: endTime,
+              },
+              endTimer: {
+                gte: startTime,
+              },
             },
-            endTimer:{
-                gte: startTimer
-            }
+          ],
+          NOT: {
+            id: id || undefined, 
           },
-        ],
-      },
-    });
-    if(checkOverLapping){
+        },
+      });
+  
+      if (checkOverLapping) {
         return res.status(409).json({
-            error:'Event is already exist at this time frame.',
-            overlappingEvent:{
-                startTimer: checkOverLapping.startTimer,
-                endTimer: checkOverLapping.endTimer
-            }
-        })
+          error: "Event already exists in this time frame.",
+          overlappingEvent: {
+            startTimer: checkOverLapping.startTimer,
+            endTimer: checkOverLapping.endTimer,
+          },
+        });
+      }
+  
+      let response;
+      if (id) {
+        // Update the event if id is provided
+        response = await db.event.update({
+          where: { id: id },
+          data: { link, description, startTimer: startTime, endTimer: endTime, status },
+        });
+      } else {
+        // Create the event if no id is provided
+        response = await db.event.create({
+          data: { link, description, startTimer: startTime, endTimer: endTime, status },
+        });
+      }
+  
+      res.status(200).json({ success: true, data: response });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, error: "Internal Server Error" });
     }
-    // Create the event if no overlap is found
-    const response = await db.event.create({
-      data: { link, description, startTimer, endTimer, status },
-    });
-    
-    res.json({ success: true, data: response });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, error: "Internal Server Error" });
-  }
-};
+  };
+  
 
 export const getEvents = async (req, res) => {
   try {
@@ -84,29 +105,4 @@ export const currentEvent = async (req, res) => {
   }
 };
 
-export const updateEvent = async (req, res) => {
-  const { link, description, startTimer, endTimer, status } = req.body;
-  const { id } = req.params;
-  console.log(id, link, description, startTimer, endTimer, status);
-  try {
-    const response = await db.event.update({
-      where: {
-        id: id,
-      },
-      data: {
-        link,
-        description,
-        startTimer,
-        endTimer,
-        status,
-      },
-    });
 
-    return res.status(200).json({ success: true, data: response });
-  } catch (error) {
-    console.error(error);
-    return res
-      .status(500)
-      .json({ success: false, error: "Internal Server Error" });
-  }
-};

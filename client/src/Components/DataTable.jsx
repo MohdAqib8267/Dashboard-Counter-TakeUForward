@@ -65,7 +65,8 @@ function DataTable() {
     try {
       setLoading(true);
       if (update && id != "") {
-        const response = await axios.put(`${URL}/api/event/${id}`, data, {
+        //update api
+        const response = await axios.post(`${URL}/api/event/${id}`, data, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -74,6 +75,7 @@ function DataTable() {
         setUpdate(false);
         setId("");
       } else {
+        //create api
         const response = await axios.post(`${URL}/api/event`, data, {
           headers: {
             "Content-Type": "application/json",
@@ -86,8 +88,7 @@ function DataTable() {
       await fetchEvents();
     } catch (error) {
       if (error.response?.status == 409) {
-        setLoading(true);
-        alert(`Event is already exist in this frame. please select Event except ${error.response.data.overlappingEvent.startTimer} to ${error.response.data.overlappingEvent.startTimer}`);
+        alert(`Event is already exist in this frame. please select another time frame except ${dayjs(error.response.data.overlappingEvent.startTimer)} to ${dayjs(error.response.data.overlappingEvent.endTimer)}`);
       }
       console.log(error);
     } finally {
